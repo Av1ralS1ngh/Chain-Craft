@@ -8,7 +8,7 @@ const SocialLink = ({
   label,
   index,
 }: {
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   href: string;
   label: string;
   index: number;

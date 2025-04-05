@@ -6,7 +6,7 @@ const LoanAnimation = () => {
   const [step, setStep] = useState(0);
   const [loanAmount , setLoanAmount] = useState(1); // $1 loan
   const [profit, setProfit] = useState(0);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [isAnimating, ] = useState(false);
 
   const steps = [
     `Request ${loanAmount} Loan`,

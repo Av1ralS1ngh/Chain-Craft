@@ -5,7 +5,7 @@ import { usePrivy } from "@privy-io/react-auth";
 import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
-  const { login, authenticated, user, logout } = usePrivy();
+  const { login, authenticated, logout } = usePrivy();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-primary/10">

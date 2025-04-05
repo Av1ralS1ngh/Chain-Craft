@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import "./globals.css";
 import "@coinbase/onchainkit/styles.css"
 import { Providers } from "@/coinbaseProvider";
-import { cookieToInitialState } from 'wagmi';
+// import { cookieToInitialState } from 'wagmi';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
