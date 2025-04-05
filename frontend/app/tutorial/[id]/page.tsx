@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
 import MockUniswapInterface from "@/components/MockUniswapInterface";
 import { GoogleGenAI } from "@google/genai";
-import axios from "axios";
 
 const tutorials = {
   1: {
@@ -142,7 +141,7 @@ export default function TutorialPage({ params }: { params: { id: string } }) {
     if (tutorials[nextTutorialId as keyof typeof tutorials]) {
       router.push(`/tutorial/${nextTutorialId}`);
     } else {
-      router.push("/tutorials"); // or wherever you want to redirect when there are no more tutorials
+      router.push("/simulation"); // or wherever you want to redirect when there are no more tutorials
     }
   };
 

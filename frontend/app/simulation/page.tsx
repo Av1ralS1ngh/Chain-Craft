@@ -7,6 +7,7 @@ import dojoAbi from "@/abi/dojoAbi.json"
 import yieldFarming from "@/abi/yieldFarming.json"
 import {ethers} from "ethers"
 import { FaEthereum } from "react-icons/fa";
+import { useRouter } from 'next/navigation';
 
 const tokens = [
   { name: 'Ethereum', symbol: 'ETH', apy: '13.12%', balance: '2.5 ETH' },
@@ -26,6 +27,8 @@ export default function StakeTokens() {
 
   const [signer, setSigner] = useState<any>(null);
   const [address, setAddress] = useState<any>(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     async function setupProvider() {
@@ -110,7 +113,7 @@ export default function StakeTokens() {
   const claimReward = async () =>{
     try {
       const response = await yieldFarmingContract.claimRewards()
-      const repsonse2 = await yieldFarmingContract.stopFarming()
+      // const repsonse2 = await yieldFarmingContract.stopFarming()
       console.log(response)
     } catch (error) {
       console.log(error)
@@ -120,7 +123,15 @@ export default function StakeTokens() {
   return (
     <div>
       <div style={{ display: 'flex', flexDirection: "column",justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#f3f4f6' }}>
-      <div style={{ width: '350px', padding: '20px', backgroundColor: 'white', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', borderRadius: '10px' }}>
+        {/* Add this button before the stake tokens card */}
+        <button
+          onClick={() => router.push("/simulationFlash")}
+          className="bg-purple-600 text-white px-6 py-2 rounded-lg font-medium shadow-md hover:bg-purple-700 transition mb-4"
+        >
+          Go to Flash Simulation
+        </button>
+
+        <div style={{ width: '350px', padding: '20px', backgroundColor: 'white', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', borderRadius: '10px' }}>
 
         <h2 style={{ textAlign: 'center', fontSize: '20px', fontWeight: 'bold' }}>Stake Tokens</h2>
 
@@ -144,7 +155,12 @@ export default function StakeTokens() {
       Select Token:
     </label>
     <select
-      onChange={(e) => setSelectedToken(tokens.find(t => t.symbol === e.target.value))}
+      onChange={(e) => {
+        const token = tokens.find(t => t.symbol === e.target.value);
+        if (token) {
+          setSelectedToken(token);
+        }
+      }}
       className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
                focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
                text-gray-700 bg-white appearance-none
@@ -167,7 +183,7 @@ export default function StakeTokens() {
         </div>
         
         <button 
-          style={{ width: '100%', backgroundColor: '#2563eb', color: 'white', fontSize: '16px', padding: '10px', bonclickorderRadius: '5px', marginTop: '15px', border: 'none', cursor: 'pointer' }}
+          style={{ width: '100%', backgroundColor: '#2563eb', color: 'white', fontSize: '16px', padding: '10px', borderRadius: '5px', marginTop: '15px', border: 'none', cursor: 'pointer' }}
           onClick={() => staketokens()}
         >
           Stake Tokens
