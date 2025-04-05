@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
 import MockUniswapInterface from "@/components/MockUniswapInterface";
+import { GoogleGenAI } from "@google/genai";
 import axios from "axios";
 
 const tutorials = {
@@ -61,13 +62,15 @@ export default function TutorialPage({ params }: { params: { id: string } }) {
   const [isLoading, setIsLoading] = useState(false);
   const [tutorialContent, setTutorialContent] = useState("");
 
+  const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GENAI_API_KEY})
+
   React.useEffect(() => {
     if (!authenticated) {
       router.push("/");
     }
   }, [authenticated, router]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (authenticated) {
       setTasks((prev) =>
         prev.map((task) =>
@@ -81,21 +84,26 @@ export default function TutorialPage({ params }: { params: { id: string } }) {
   React.useEffect(() => {
     const fetchTutorialContent = async () => {
       try {
-        const response = await axios.post(
-          "https://autonome.alt.technology/agent-eqtrhs/chat",
-          {
-            message:
-              "Explain how Uniswap's automated market maker (AMM) works, focusing on its liquidity pools, token swaps, and the concept of impermanent loss. Provide an in-depth example of a trade execution on Uniswap.",
-          },
-          {
-            auth: {
-              username: process.env.NEXT_PUBLIC_AI_AGENT_USERNAME!,
-              password: process.env.NEXT_PUBLIC_AI_AGENT_PASSWORD!,
-            },
-          }
-        );
+        // const response = await axios.post(
+        //   "https://autonome.alt.technology/agent-eqtrhs/chat",
+        //   {
+        //     message:
+        //       "Explain how Uniswap's automated market maker (AMM) works, focusing on its liquidity pools, token swaps, and the concept of impermanent loss. Provide an in-depth example of a trade execution on Uniswap.",
+        //   },
+        //   {
+        //     auth: {
+        //       username: process.env.NEXT_PUBLIC_AI_AGENT_USERNAME!,
+        //       password: process.env.NEXT_PUBLIC_AI_AGENT_PASSWORD!,
+        //     },
+        //   }
+        // );
 
-        setTutorialContent(response.data.response[0]);
+        const response = await ai.models.generateContent({
+          model: "gemini-2.0-flash",
+          contents: "Explain how Uniswap's automated market maker (AMM) works, focusing on its liquidity pools, token swaps, and the concept of impermanent loss. Provide an in-depth example of a trade execution on Uniswap.",
+        });
+
+        setTutorialContent(response.text || 'No content available');
       } catch (error) {
         console.error("Error fetching tutorial content:", error);
         setTutorialContent(
@@ -143,23 +151,28 @@ export default function TutorialPage({ params }: { params: { id: string } }) {
     try {
       setIsLoading(true);
 
-      const response = await axios.post(
-        "https://autonome.alt.technology/agent-eqtrhs/chat",
-        { message },
-        {
-          auth: {
-            username: process.env.NEXT_PUBLIC_AI_AGENT_USERNAME!,
-            password: process.env.NEXT_PUBLIC_AI_AGENT_PASSWORD!,
-          },
-        }
-      );
+      // const response = await axios.post(
+      //   "https://autonome.alt.technology/agent-eqtrhs/chat",
+      //   { message },
+      //   {
+      //     auth: {
+      //       username: process.env.NEXT_PUBLIC_AI_AGENT_USERNAME!,
+      //       password: process.env.NEXT_PUBLIC_AI_AGENT_PASSWORD!,
+      //     },
+      //   }
+      // );
 
-      const aiResponse = response.data.response[0];
+      const response = await ai.models.generateContent({
+        model: "gemini-2.0-flash",
+        contents: message,
+      });
+
+      const aiResponse = response.text;
 
       setMessages((prev) => [
         ...prev,
         { content: message, role: "user" },
-        { content: aiResponse, role: "assistant" },
+        { content: aiResponse || '', role: "assistant" },
       ]);
     } catch (error) {
       console.error("Error sending message:", error);
