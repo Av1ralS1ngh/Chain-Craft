@@ -1,8 +1,8 @@
 'use client';
 import { useState , useEffect} from 'react';
-import { WalletDefault } from '@coinbase/onchainkit/wallet';
-import {useAccount , useBalance } from "wagmi"
-import {FundCard} from "@coinbase/onchainkit/fund"
+// import { WalletDefault } from '@coinbase/onchainkit/wallet';
+// import {useAccount , useBalance } from "wagmi"
+// import {FundCard} from "@coinbase/onchainkit/fund"
 import dojoAbi from "@/abi/dojoAbi.json"
 import yieldFarming from "@/abi/yieldFarming.json"
 import {ethers} from "ethers"
@@ -16,17 +16,17 @@ const dojoAddress = "00xF302681e2172A96A81A3926608C1CDCA0ffa876c"
 const yieldFarmingAddress = "0x797ACB97aa4B23698c4fcAA9E203A23421050F62"
 
 export default function StakeTokens() {
-  const [selectedToken, setSelectedToken] = useState(tokens[0]);
+  const [, setSelectedToken] = useState(tokens[0]);
   const [stakeAmount, setStakeAmount] = useState("");
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const [dojoContract, setDojoContract] = useState<any>();
-  const [yieldFarmingContract, setYieldFarmingContract] = useState<any>();
-  const [balance, setBalance] = useState<any>();
-  const [ethBalance , setEthBalance] = useState<any>();
-  const [userBlance , setUserBalance] = useState<any>();
+  // const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const [, setDojoContract] = useState<ethers.Contract | undefined>();
+  const [yieldFarmingContract, setYieldFarmingContract] = useState<ethers.Contract | undefined>();
+  const [balance, setBalance] = useState<number | undefined>();
+  const [ethBalance, setEthBalance] = useState<number | undefined>();
+  const [userBlance, setUserBalance] = useState<string>();
 
-  const [signer, setSigner] = useState<any>(null);
-  const [address, setAddress] = useState<any>(null);
+  const [signer, setSigner] = useState<ethers.Signer | null>(null);
+  const [address, setAddress] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -61,6 +61,7 @@ export default function StakeTokens() {
       }
       console.log(stakeAmount)
       
+      if (!yieldFarmingContract) throw new Error("Yield farming contract not initialized");
       const tx = await yieldFarmingContract.depositEth({
         value: ethers.utils.parseEther(stakeAmount),
       });
@@ -76,7 +77,8 @@ export default function StakeTokens() {
   const getbalance = async () => {
     try
     {
-      const response = await yieldFarmingContract.getUserDojoCoinBalance(address)
+      if (!yieldFarmingContract) throw new Error("Yield farming contract not initialized");
+      const response = await yieldFarmingContract.getUserDojoCoinBalance(address);
       const balance = await yieldFarmingContract.getUserSepoliaEthBalance(address)
       setEthBalance(Number(ethers.BigNumber.from(balance._hex))/1e18)
       setBalance(Number(ethers.BigNumber.from(response._hex))/1e18)
@@ -88,7 +90,8 @@ export default function StakeTokens() {
 
   const startYearFarmer = async () =>{
     try {
-      const response = await yieldFarmingContract.startYearFarmer()
+      if (!yieldFarmingContract) throw new Error("Yield farming contract not initialized");
+      const response = await yieldFarmingContract.startYearFarmer();
       console.log(response)
     } catch (error) {
       console.log(error)
@@ -96,7 +99,8 @@ export default function StakeTokens() {
   }
   const startDayFarmer = async () =>{
     try {
-      const response = await yieldFarmingContract.startDayFarmer()
+      if (!yieldFarmingContract) throw new Error("Yield farming contract not initialized");
+      const response = await yieldFarmingContract.startDayFarmer();
       console.log(response)
     } catch (error) {
       console.log(error)
@@ -104,7 +108,8 @@ export default function StakeTokens() {
   }
   const startMonthFarmer = async () =>{
     try {
-      const response = await yieldFarmingContract.startMonthFarmer()
+      if (!yieldFarmingContract) throw new Error("Yield farming contract not initialized");
+      const response = await yieldFarmingContract.startMonthFarmer();
       console.log(response)
     } catch (error) {
       console.log(error)
@@ -112,7 +117,8 @@ export default function StakeTokens() {
   }
   const claimReward = async () =>{
     try {
-      const response = await yieldFarmingContract.claimRewards()
+      if (!yieldFarmingContract) throw new Error("Yield farming contract not initialized");
+      const response = await yieldFarmingContract.claimRewards();
       // const repsonse2 = await yieldFarmingContract.stopFarming()
       console.log(response)
     } catch (error) {
